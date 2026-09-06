@@ -190,6 +190,23 @@ describe("WhatsAppFormatConverter", () => {
       expect(converter.renderPostable({ markdown })).toBe(expected);
     });
 
+    it("renders deeply nested formatting without exponential lookahead", () => {
+      let markdown = "end";
+      let expected = "end";
+      for (let depth = 0; depth < 23; depth++) {
+        const marker = depth % 2 === 0 ? "*" : "~";
+        markdown = `text ${marker}${marker}${markdown} end${marker}${marker}`;
+        expected = `text ${marker}${expected} end${marker}`;
+      }
+
+      const start = performance.now();
+      const result = converter.renderPostable({ markdown });
+      const elapsed = performance.now() - start;
+      expect(result).toBe(expected);
+      // Allow ample CI headroom while catching repeated subtree serialization.
+      expect(elapsed).toBeLessThan(1000);
+    });
+
     it("should render a plain string", () => {
       const result = converter.renderPostable("Hello world");
       expect(result).toBe("Hello world");

@@ -62,7 +62,7 @@ export class WhatsAppFormatConverter extends BaseFormatConverter {
       }
       return node;
     });
-    return stringifyMarkdown(transformed, {
+    const options = {
       emphasis: "_",
       bullet: "-",
       handlers: {
@@ -72,7 +72,11 @@ export class WhatsAppFormatConverter extends BaseFormatConverter {
         delete: (node, _parent, state, info) =>
           `~${state.containerPhrasing(node, { ...info, before: "~", after: "~" })}~`,
       },
-    }).trim();
+    } satisfies Parameters<typeof stringifyMarkdown>[1];
+    // Lookahead must not serialize nested formatting a second time.
+    Object.assign(options.handlers.strong, { peek: () => "*" });
+    Object.assign(options.handlers.delete, { peek: () => "~" });
+    return stringifyMarkdown(transformed, options).trim();
   }
 
   /**
