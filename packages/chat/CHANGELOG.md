@@ -1,5 +1,11 @@
 # chat
 
+## 4.41.0
+
+### Minor Changes
+
+- 056d883: Allow `history.user.maxPerUser` and legacy `transcripts.maxPerUser` to be `false` to disable count-based history eviction. The default remains 200 entries per user.
+
 ## 4.40.0
 
 ### Minor Changes
